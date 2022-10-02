@@ -191,7 +191,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--dataset',
         type=str,
-        default= "t91",
+        default= "t91"
         help=("Options: 'DIV2K', 'REDS', 'Vimeo90K' You may need to modify the corresponding configurations in codes."))
     args = parser.parse_args()
     dataset = args.dataset.lower()

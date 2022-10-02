@@ -97,8 +97,9 @@ class BaseModel():
             net = DistributedDataParallel(
                 net, device_ids=[torch.cuda.current_device()], find_unused_parameters=find_unused_parameters)
         elif self.opt['num_gpu'] > 1:
+            #使用self.opt['num_gpu'] 个GPU
+            net = DataParallel(net, device_ids=self.opt['gpu_ids'])
             # net = DataParallel(net)
-            net = torch.nn.DataParallel(net, device_ids=self.opt['gpu_ids'])
         return net
 
     def get_optimizer(self, optim_type, params, lr, **kwargs):

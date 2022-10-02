@@ -1,0 +1,1 @@
+python basicsr/train.py -opt options/train/FSRCNN/train_FSRCNN_x3.yml

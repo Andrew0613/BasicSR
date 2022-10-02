@@ -191,7 +191,6 @@ if __name__ == '__main__':
     parser.add_argument(
         '--dataset',
         type=str,
-        default= "t91",
         help=("Options: 'DIV2K', 'REDS', 'Vimeo90K' You may need to modify the corresponding configurations in codes."))
     args = parser.parse_args()
     dataset = args.dataset.lower()
@@ -201,7 +200,5 @@ if __name__ == '__main__':
         create_lmdb_for_reds()
     elif dataset == 'vimeo90k':
         create_lmdb_for_vimeo90k()
-    elif dataset == 't91':
-        create_lmdb_for_t91()
     else:
         raise ValueError('Wrong dataset.')

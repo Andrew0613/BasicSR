@@ -1,0 +1,1 @@
+python basicsr/train.py -opt options/train/SRResNet_SRGAN/train_MSRResNet_x4.yml

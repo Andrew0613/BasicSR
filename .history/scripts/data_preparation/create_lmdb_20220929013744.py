@@ -162,8 +162,8 @@ def create_lmdb_for_t91():
         Remember to modify opt configurations according to your settings.
     """
     # HR images
-    folder_path = 'datasets/T91/hr3'
-    lmdb_path = 'datasets/T91/T91_train_HR_sub.lmdb'
+    folder_path = 'datasets/DIV2K/DIV2K_train_HR_sub'
+    lmdb_path = 'datasets/DIV2K/DIV2K_train_HR_sub.lmdb'
     img_path_list, keys = prepare_keys_div2k(folder_path)
     make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
 
@@ -174,8 +174,8 @@ def create_lmdb_for_t91():
     # make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
 
     # LRx3 images
-    folder_path = 'datasets/T91/lr3'
-    lmdb_path = 'datasets/T91/T91_train_LR_bicubic_X3_sub.lmdb'
+    folder_path = 'datasets/DIV2K/DIV2K_train_LR_bicubic/X3_sub'
+    lmdb_path = 'datasets/DIV2K/DIV2K_train_LR_bicubic_X3_sub.lmdb'
     img_path_list, keys = prepare_keys_div2k(folder_path)
     make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
 
@@ -191,7 +191,6 @@ if __name__ == '__main__':
     parser.add_argument(
         '--dataset',
         type=str,
-        default= "t91",
         help=("Options: 'DIV2K', 'REDS', 'Vimeo90K' You may need to modify the corresponding configurations in codes."))
     args = parser.parse_args()
     dataset = args.dataset.lower()
@@ -201,7 +200,5 @@ if __name__ == '__main__':
         create_lmdb_for_reds()
     elif dataset == 'vimeo90k':
         create_lmdb_for_vimeo90k()
-    elif dataset == 't91':
-        create_lmdb_for_t91()
     else:
         raise ValueError('Wrong dataset.')
