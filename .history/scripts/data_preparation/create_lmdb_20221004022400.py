@@ -165,7 +165,7 @@ def create_lmdb_for_t91(is_residual=False):
     if is_residual:
         name = "residual"
     # HR images
-    folder_path = 'datasets/T91/label_x3_residual'
+    folder_path = 'datasets/T91/hr3'
     lmdb_path = 'datasets/T91/T91_train_HR'+name+'_sub.lmdb'
     img_path_list, keys = prepare_keys_div2k(folder_path)
     make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
@@ -177,7 +177,7 @@ def create_lmdb_for_t91(is_residual=False):
     # make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
 
     # LRx3 images
-    folder_path = 'datasets/T91/label_x3_residual'
+    folder_path = 'datasets/T91/lr3'
     lmdb_path = 'datasets/T91/T91_train_LR'+name+'_bicubic_X3_sub.lmdb'
     img_path_list, keys = prepare_keys_div2k(folder_path)
     make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
