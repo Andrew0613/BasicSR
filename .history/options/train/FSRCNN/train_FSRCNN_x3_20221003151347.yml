@@ -61,7 +61,7 @@ network_g:
 path:
   pretrain_network_g: ~
   strict_load_g: true
-  resume_state:
+  resume_state: experiments/003_FSRCNN_x3_d56s12m4_T91_MSRA_400k_B16G4_archived_20221002_154700/training_states/390000.state
 
 # training settings
 train:
