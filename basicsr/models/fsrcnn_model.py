@@ -68,7 +68,9 @@ class FSRCNNModel(SRModel):
         # set up optimizers and schedulers
         self.setup_fsrcnn_optimizers()
         # self.setup_optimizers()
-        # self.setup_schedulers()
+        is_scheduler = train_opt.get('scheduler', None)
+        if is_scheduler:
+            self.setup_schedulers()
     def setup_fsrcnn_optimizers(self):
         """
         Setup optimizers for FSRCNN.
