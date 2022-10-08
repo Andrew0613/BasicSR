@@ -3,7 +3,7 @@
 # Use perceptual loss before ReLU as ESRGAN does
 
 # general settings
-name: 101_FSRCNN_x3_d56s12m4_T91_residual_MSRA_100k_B32G4
+name: 100_FSRCNN_x3_d56s12m4_T91_MSRA_100k_B32G4
 model_type: FSRCNNModel
 residual : True
 scale: 3
@@ -63,7 +63,7 @@ network_g:
   s : 12
   m : 4
   upscale: 3
-  is_residual : True
+  is_residual : False
   init_type: kaiming
 
 
