@@ -2,7 +2,7 @@ from operator import is_
 from PIL import Image
 import numpy as np
 import os
-import h5py
+# import h5py
 from tqdm import tqdm
 """
 按照FSRCNN论文中的说明构造数据集
@@ -91,6 +91,7 @@ def generate_train_img(dataset_paths:list,output_path,up_scale=3,patch_size=11,i
         hr_img.save(os.path.join(output_path,label_name,'%s.png'%i))
     print('Done')
 if __name__=="__main__":
-    dataset_paths = ["/ssd/home/uguser/pyd/dataset/image_SR/T91","/ssd/home/uguser/pyd/dataset/image_SR/General100"]
-    output_path = "datasets/T191"
-    generate_train_img(dataset_paths,output_path,phase="train",is_residual=False,interpolation='bilinear')
+    # ,"/ssd/home/uguser/pyd/dataset/image_SR/General100"
+    dataset_paths = ["/ssd/home/uguser/pyd/dataset/image_SR/T91"]
+    output_path = "datasets/T91"
+    generate_train_img(dataset_paths,output_path,phase="train",is_residual=False,interpolation='bicubic')

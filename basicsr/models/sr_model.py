@@ -90,7 +90,7 @@ class SRModel(BaseModel):
         if 'gt' in data:
             self.gt = data['gt'].to(self.device)
 
-    def optimize_parameters(self, current_iter):
+    def optimize_parameters(self, current_iter,tb_logger):
         self.optimizer_g.zero_grad()
         self.output = self.net_g(self.lq)
 
@@ -112,6 +112,9 @@ class SRModel(BaseModel):
                 loss_dict['l_style'] = l_style
 
         l_total.backward()
+        # #使用tensorboard可视化grad
+        # for name, params in self.net_g.named_parameters():
+        #     tb_logger.add_histogram(name + '/grad', params.grad, current_iter)
         self.optimizer_g.step()
 
         self.log_dict = self.reduce_loss_dict(loss_dict)

@@ -4,6 +4,8 @@ from torch.nn import init
 from basicsr.utils.registry import ARCH_REGISTRY
 from .arch_util import default_init_weights
 import math
+from copy import deepcopy
+from basicsr.utils import  imwrite, tensor2img
 @ARCH_REGISTRY.register()
 class FSRCNN(nn.Module):
     """FSRCNN network structure.
@@ -86,13 +88,20 @@ class FSRCNN(nn.Module):
         Returns:
             Tensor: Forward results.
         """
-        lq = x
+        lq = deepcopy(x)
         x = self.extraction_layer(x)
         x = self.mid_layers(x)
         x = self.deconv_layer(x)
         #通过上采样，将低分辨率的图像放大到高分辨率
         if self.is_residual:
             hq = F.interpolate(lq, scale_factor=self.upscale_factor, mode='bicubic', align_corners=False)
+            #检查hq中是否存在负值，则抛出异常
+            # if (hq < 0).any():
+            #     lq_img = tensor2img(lq)
+            #     hq_img = tensor2img(hq)
+            #     imwrite(lq_img, "./lq_mine.png")
+            #     imwrite(hq_img, "hq_error.png")
+                # raise Exception("upsample term contains negative values", hq[hq<0],hq.min(),"max and min of lq ", lq.max(), lq.min())
             x = x + hq
         return x
 

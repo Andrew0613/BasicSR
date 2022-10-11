@@ -101,10 +101,8 @@ class FSRCNNModel(SRModel):
             ], lr=lr,momentum=mom, weight_decay=wd)
         else:
             #使用sgd优化器，卷积层的学习率为lr,反卷积层的学习率为lr*0.1
-
-
             self.optimizer_g = optim.SGD([
                 {'params': conv_value},
-                {'params': deconv_value},
+                {'params': deconv_value,'lr': lr * 0.1},
             ], lr=lr,momentum=mom, weight_decay=wd)
         self.optimizers.append(self.optimizer_g)
