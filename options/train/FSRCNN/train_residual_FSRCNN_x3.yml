@@ -87,7 +87,7 @@ train:
     # betas: [0.9, 0.99]
 
 
-  total_iter: 2000000
+  total_iter: 5000000
   warmup_iter: -1  # no warm up
 
   # losses
