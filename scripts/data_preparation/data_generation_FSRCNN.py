@@ -28,7 +28,7 @@ def generate_train_img(dataset_paths:list,output_path,up_scale=3,patch_size=11,i
         if phase == "train":
             for img_path in tqdm(img_path_list):
                 img = Image.open(os.path.join(dataset_path,img_path))
-                for scale in range(6,10):
+                for scale in range(6,11):
                     for roatation in [0,90,180,270]:
                         new_img = img.resize((img.size[0]*scale//10,img.size[1]*scale//10),interpolate)
                         new_img = img.rotate(roatation)
@@ -92,6 +92,7 @@ def generate_train_img(dataset_paths:list,output_path,up_scale=3,patch_size=11,i
     print('Done')
 if __name__=="__main__":
     # ,"/ssd/home/uguser/pyd/dataset/image_SR/General100"
+    # "/ssd/home/uguser/pyd/dataset/image_SR/T91","/ssd/home/uguser/pyd/dataset/image_SR/General100"
     dataset_paths = ["/ssd/home/uguser/pyd/dataset/image_SR/T91"]
     output_path = "datasets/T91"
-    generate_train_img(dataset_paths,output_path,phase="train",is_residual=False,interpolation='bicubic')
+    generate_train_img(dataset_paths,output_path,phase="train",is_residual=False,interpolation='binlinear')

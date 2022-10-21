@@ -10,7 +10,7 @@ from basicsr.utils import get_root_logger, imwrite, tensor2img
 from basicsr.utils.registry import MODEL_REGISTRY
 from .sr_model import SRModel
 import torch.optim as optim
-
+from copy import deepcopy
 @MODEL_REGISTRY.register()
 class FSRCNNModel(SRModel):
     """FSRCNN Model for single image super-resolution."""
@@ -27,10 +27,37 @@ class FSRCNNModel(SRModel):
         load_path = self.opt['path'].get('pretrain_network_g', None)
         if load_path is not None:
             param_key = self.opt['path'].get('param_key_g', 'params')
-            self.load_network(self.net_g, load_path, self.opt['path'].get('strict_load_g', True), param_key)
+            self.load_fsrcnn_network(self.net_g, load_path, self.opt['path'].get('strict_load_g', True), param_key)
 
         if self.is_train:
             self.init_fsrcnn_training_settings()
+    def load_fsrcnn_network(self, net, load_path, strict=True, param_key='params',only_train_last_layer=False):
+        """Load network.
+
+        Args:
+            load_path (str): The path of networks to be loaded.
+            net (nn.Module): Network.
+            strict (bool): Whether strictly loaded.
+            param_key (str): The parameter key of loaded network. If set to
+                None, use the root 'path'.
+                Default: 'params'.
+        """
+        logger = get_root_logger()
+        net = self.get_bare_model(net)
+        load_net = torch.load(load_path, map_location=lambda storage, loc: storage)
+        if param_key is not None:
+            if param_key not in load_net and 'params' in load_net:
+                param_key = 'params'
+                logger.info('Loading: params_ema does not exist, use params.')
+            load_net = load_net[param_key]
+        logger.info(f'Loading {net.__class__.__name__} model from {load_path}, with param key: [{param_key}].')
+        # remove unnecessary 'module.'
+        for k, v in deepcopy(load_net).items():
+            if k.startswith('module.'):
+                load_net[k[7:]] = v
+                load_net.pop(k)
+        self._print_different_keys_loading(net, load_net, strict)
+        net.load_state_dict(load_net, strict=strict)
     def init_fsrcnn_training_settings(self):
         self.net_g.train()
         train_opt = self.opt['train']
@@ -77,7 +104,7 @@ class FSRCNNModel(SRModel):
         卷积层和反卷积层的学习率不同，需要手写
         """
         train_opt = self.opt['train']
-
+        optimizer_type = train_opt['optim_g'].get('type', 'SGD')
         lr = train_opt['optim_g']['lr']
         is_finetune = train_opt['optim_g'].get('is_finetune', False)
         mom = train_opt['optim_g'].get('momentum', 0.9)
@@ -96,13 +123,25 @@ class FSRCNNModel(SRModel):
                     conv_key.append(k)
         #使用sgd优化器
         if is_finetune:
-            self.optimizer_g = optim.SGD([
-                {'params': deconv_value, 'lr': lr * 0.05}
-            ], lr=lr,momentum=mom, weight_decay=wd)
+            if optimizer_type == 'SGD':
+                self.optimizer_g = optim.SGD([
+                    {'params': conv_value},
+                    {'params': deconv_value, 'lr': lr * 0.1}
+                ], lr=lr,momentum=mom, weight_decay=wd)
+            elif optimizer_type == 'Adam':
+                self.optimizer_g = optim.Adam([
+                    {'params': conv_value},
+                    {'params': deconv_value,'lr': lr * 0.1},
+                ], lr=lr,betas=(mom, 0.999), weight_decay=wd)
         else:
-            #使用sgd优化器，卷积层的学习率为lr,反卷积层的学习率为lr*0.1
-            self.optimizer_g = optim.SGD([
-                {'params': conv_value},
-                {'params': deconv_value,'lr': lr * 0.1},
-            ], lr=lr,momentum=mom, weight_decay=wd)
+            if optimizer_type == 'SGD':
+                self.optimizer_g = optim.SGD([
+                    {'params': conv_value},
+                    {'params': deconv_value,'lr': lr * 0.1},
+                ], lr=lr,momentum=mom, weight_decay=wd)
+            elif optimizer_type =='Adam':
+                self.optimizer_g = optim.Adam([
+                    {'params': conv_value},
+                    {'params': deconv_value,'lr': lr * 0.1},
+                ], lr=lr,betas=(mom, 0.999), weight_decay=wd)
         self.optimizers.append(self.optimizer_g)

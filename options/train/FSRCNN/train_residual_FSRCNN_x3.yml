@@ -1,14 +1,18 @@
+# GENERATE TIME: Wed Oct 12 23:26:21 2022
+# CMD:
+# basicsr/train.py -opt options/train/FSRCNN/train_residual_FSRCNN_x3.yml
+
 # Modified SRResNet w/o BN from:
 # Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network
 # Use perceptual loss before ReLU as ESRGAN does
 
 # general settings
-name: 001_sgd5e2_FSRCNN_x3_d56s12m4_T91_residual_MSRA_2m_B64G4
+name: 101_adam_FSRCNN_x3_d56s12m4_T91_residual_MSRA_2m_B64G4
 model_type: FSRCNNModel
 residual : True
 scale: 3
-num_gpu: 4 # set num_gpu: 0 for cpu mode
-gpu_ids: [7,6,5,4]
+num_gpu: 2 # set num_gpu: 0 for cpu mode
+gpu_ids: [7,6]
 manual_seed: 0
 
 # dataset and data loader settings
@@ -77,14 +81,14 @@ path:
 train:
   ema_decay: 0.999
   optim_g:
-    type: SGD
-    lr: !!float 5e-2
-    weight_decay: 0
-    momentum: 0.9
-    # type: Adam
-    # lr: !!float 1e-3
+    # type: SGD
+    # lr: !!float 5e-2
     # weight_decay: 0
-    # betas: [0.9, 0.99]
+    # momentum: 0.9
+    type: Adam
+    lr: !!float 1e-3
+    weight_decay: 0
+    betas: [0.9, 0.99]
 
 
   total_iter: 5000000
@@ -104,7 +108,7 @@ val:
     psnr: # metric name, can be arbitrary
       type: calculate_psnr
       crop_border: 3
-      test_y_channel: false
+      test_y_channel: true
       use_pbar: True
 
 # logging settings

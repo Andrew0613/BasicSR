@@ -1,4 +1,4 @@
-name: 000_adam_FSRCNN_x3_d56s12m4_T91_MSRA_2m_B64G4
+name: 006_finetune_FSRCNN_x3_d14s14m4_T91real_residual_MSRA_2m_B64G4
 model_type: FSRCNNModel
 scale: 3
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -25,18 +25,19 @@ datasets:
 
 # network structures
 network_g:
-  type: FSRCNN
+  type: FSRCNN_Modified
   in_channels: 1
   out_channels: 1
-  d : 56
-  s : 12
+  d : 14
+  s : 14
   m : 4
   upscale: 3
+  is_residual : True
   init_type: kaiming
 
 # path
 path:
-  pretrain_network_g: experiments/000_adam_FSRCNN_x3_d56s12m4_T91_MSRA_2m_B64G4/models/net_g_latest.pth
+  pretrain_network_g: experiments/006_finetune_FSRCNN_x3_d14s14m4_T91real_residual_MSRA_2m_B64G4/models/net_g_latest.pth
   strict_load_g: true
 
 # validation settings
