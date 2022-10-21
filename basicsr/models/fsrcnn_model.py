@@ -53,6 +53,7 @@ class FSRCNNModel(SRModel):
         logger.info(f'Loading {net.__class__.__name__} model from {load_path}, with param key: [{param_key}].')
         # remove unnecessary 'module.'
         for k, v in deepcopy(load_net).items():
+            print("k",k)
             if k.startswith('module.'):
                 load_net[k[7:]] = v
                 load_net.pop(k)

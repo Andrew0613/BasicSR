@@ -144,9 +144,10 @@ class FSRCNN_Modified(nn.Module):
         # expanding_layer = [nn.Conv2d(s, d, kernel_size=1, padding=0),nn.PReLU(d)]
         # mid_layers.extend(expanding_layer)
         self.mid_layers = nn.Sequential(*mid_layers)
+
         if upscale == 2:
             self.deconv_layer = nn.Sequential(
-                nn.ConvTranspose2d(d, out_channels, kernel_size=7, stride=upscale, padding=1),
+                nn.ConvTranspose2d(d, out_channels, kernel_size=7, stride=upscale, padding=5//2),
                 nn.PReLU(out_channels)
             )
         elif upscale == 3:
@@ -156,7 +157,7 @@ class FSRCNN_Modified(nn.Module):
             )
         elif upscale == 4:
             self.deconv_layer = nn.Sequential(
-                nn.ConvTranspose2d(d, out_channels, kernel_size=7, stride=upscale, padding=1),
+                nn.ConvTranspose2d(d, out_channels, kernel_size=7, stride=upscale, padding=3//2),
                 nn.PReLU(out_channels)
             )
         if init_type == "kaiming":

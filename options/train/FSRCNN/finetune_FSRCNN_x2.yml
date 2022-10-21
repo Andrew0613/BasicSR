@@ -1,0 +1,142 @@
+# GENERATE TIME: Tue Oct 18 02:45:26 2022
+# CMD:
+# basicsr/train.py -opt options/train/FSRCNN/finetune_FSRCNN_x3.yml
+
+# GENERATE TIME: Mon Oct 17 11:20:26 2022
+# CMD:
+# basicsr/train.py -opt options/train/FSRCNN/finetune_FSRCNN_x3.yml
+
+# Modified SRResNet w/o BN from:
+# Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network
+# Use perceptual loss before ReLU as ESRGAN does
+
+# general settings
+name: 007_finetune_FSRCNN_x2_d10s10m4_T191_residual_MSRA_2m_B64G4
+model_type: FSRCNNModel
+residual : True
+scale: 2
+num_gpu: 2 # set num_gpu: 0 for cpu mode
+gpu_ids: [7,6]
+manual_seed: 0
+only_train_last_layer: False
+# dataset and data loader settings
+datasets:
+  train:
+    name: T91
+    type: PairedImageDataset
+    # dataroot_gt: datasets/T91/hr3
+    # dataroot_lq: datasets/T91/lr3
+    # (for lmdb)
+    color : 'y'
+    dataroot_gt: datasets/T91/T91_train_HR_sub.lmdb
+    dataroot_lq: datasets/T91/T91_train_LR_bicubic_X3_sub.lmdb
+    filename_tmpl: '{}'
+    io_backend:
+      # type: disk
+      # (for lmdb)
+      type: lmdb
+
+    gt_size: 33
+    use_hflip: true
+    use_rot: true
+
+    # data loader
+    num_worker_per_gpu: 8
+    batch_size_per_gpu: 32
+    dataset_enlarge_ratio: 100
+    prefetch_mode: ~
+
+  val:
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: /home/pyd/dataset/Set5/GTmod12
+    dataroot_lq: /home/pyd/dataset/Set5/LRbicx3
+    color : 'y'
+    io_backend:
+      type: disk
+    # name: Set14
+    # type: PairedImageDataset
+    # dataroot_gt: datasets/Set14/GTmod12
+    # dataroot_lq: datasets/Set14/LRbicx3
+    # color : 'y'
+    # io_backend:
+    #   type: disk
+
+# network structures 这里修改为对应的网络初始化参数，即在此处添加初始化类型
+network_g:
+  type: FSRCNN_Modified
+  in_channels: 1
+  out_channels: 1
+  d : 10
+  s : 10
+  m : 4
+  upscale: 2
+  is_residual : True
+  init_type: kaiming
+
+
+# path
+path:
+  pretrain_network_g: experiments/005_sgd1e2_FSRCNN_x3_d10s10m4_T91_residual_MSRA_2m_B64G4/models/net_g_5000000.pth
+  strict_load_g: true
+  resume_state: ~
+
+# training settings
+train:
+  ema_decay: 0.999
+  optim_g:
+    type: SGD
+    lr: !!float 5e-3
+    weight_decay: 0
+    momentum: 0.9
+    is_finetune: true
+    # type: Adam
+    # lr: !!float 1e-3
+    # weight_decay: 0
+    # betas: [0.9, 0.99]
+  scheduler:
+    type: MultiStepLR
+    milestones: [7500000]
+    gamma: 0.1
+
+  total_iter: 5000000
+  warmup_iter: -1  # no warm up
+
+  # losses
+  pixel_opt:
+    # type: CharbonnierLoss
+    # loss_weight: !!float 1
+    # reduction: mean
+    # eps : !!float 1e-2
+    # type: HuberLoss
+    # loss_weight: !!float 1
+    # reduction: mean
+    # beta : 0.9
+    type: MSELoss
+    loss_weight: !!float 1
+    reduction: mean
+# validation settings
+val:
+  val_freq: !!float 5e3
+  save_img: true
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 2
+      test_y_channel: false
+      use_pbar: True
+
+# logging settings
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 5e3
+  use_tb_logger: true
+  wandb:
+    project: ~
+    resume_id: ~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500

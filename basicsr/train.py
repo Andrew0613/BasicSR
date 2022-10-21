@@ -11,8 +11,7 @@ from basicsr.data.prefetch_dataloader import CPUPrefetcher, CUDAPrefetcher
 from basicsr.models import build_model
 from basicsr.utils import (AvgTimer, MessageLogger, check_resume, get_env_info, get_root_logger, get_time_str,
                            init_tb_logger, init_wandb_logger, make_exp_dirs, mkdir_and_rename, scandir)
-from basicsr.utils.options import copy_opt_file, dict2str
-from basicsr.utils.options import parse_options
+from basicsr.utils.options import copy_opt_file, dict2str, parse_options
 
 
 def init_tb_loggers(opt):
